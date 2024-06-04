@@ -5,11 +5,10 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.collections.transformation.FilteredList;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import udruzenje.model.SvemirskoTelo;
 import udruzenje.model.utility.SvemirskoTeloUtils;
@@ -20,6 +19,10 @@ public class SvemirskoTeloView extends BorderPane {
     private TableView<SvemirskoTelo> tableView;
     private Button btnPrikazObjekata;
 
+    private CheckBox cbPlanete;
+    private CheckBox cbSateliti;
+    private FilteredList<SvemirskoTelo> filteredList;
+
     public SvemirskoTeloView() {
         init();
     }
@@ -28,7 +31,9 @@ public class SvemirskoTeloView extends BorderPane {
         List<SvemirskoTelo> svemirskoTeloLista = SvemirskoTeloUtils.selectSvaTela();
         ObservableList<SvemirskoTelo> items = FXCollections.observableArrayList(svemirskoTeloLista);
 
-        tableView = new TableView<>(items);
+        filteredList = new FilteredList<>(items, p -> true);
+
+        tableView = new TableView<>(filteredList);
 
         TableColumn<SvemirskoTelo, Integer> idKolona = new TableColumn<>("ID");
         idKolona.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getId()));
@@ -50,7 +55,17 @@ public class SvemirskoTeloView extends BorderPane {
         btnPrikazObjekata = new Button("Prikaz objekata");
         btnPrikazObjekata.setOnAction(e -> prikaziObjekte());
 
-        VBox vbox = new VBox(tableView,btnPrikazObjekata);
+        cbPlanete = new CheckBox("Planete");
+        cbPlanete.setSelected(true);
+        cbSateliti = new CheckBox("Sateliti");
+        cbSateliti.setSelected(true);
+
+        cbPlanete.setOnAction(e -> filter());
+        cbSateliti.setOnAction(e -> filter());
+
+        HBox hbox = new HBox(btnPrikazObjekata,cbPlanete,cbSateliti);
+
+        VBox vbox = new VBox(tableView,hbox);
 
 
 
@@ -71,5 +86,19 @@ public class SvemirskoTeloView extends BorderPane {
             alert.setContentText("Molimo odaberite telo.");
             alert.showAndWait();
         }
+    }
+
+    private void filter(){
+        filteredList.setPredicate(telo -> {
+            if (cbPlanete.isSelected() && cbSateliti.isSelected()) {
+                return true;
+            } else if (cbPlanete.isSelected()) {
+                return telo.getTip().equalsIgnoreCase("Planeta");
+            } else if (cbSateliti.isSelected()) {
+                return telo.getTip().equalsIgnoreCase("Satelit");
+            } else {
+                return false;
+            }
+        });
     }
 }
