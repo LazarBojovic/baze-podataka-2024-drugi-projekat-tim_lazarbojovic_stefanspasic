@@ -3,12 +3,12 @@ package udruzenje.model;
 import lombok.Getter;
 
 @Getter
-public class Planeta {
+public class SvemirskoTelo {
 
     private final int id;
     private String  ime;
     private String tip;
-    private int planetaId;
+    private int teloID;
     private boolean istrazen;
     private boolean nastanjiva;
     private double  udaljenost;
@@ -21,13 +21,12 @@ public class Planeta {
     private int brUmrlih;
     private int godinaIstrazivanja;
 
-    //public Planeta(int id, String ime, boolean istrazen, boolean nastanjiva, double udaljenost, double nizaTemp, double visaTemp, double procenatKiseonika, double procenatGasa, double gravitacija, double brzinaOrbitiranja, int brUmrlih, int godinaIstrazivanja) {
-    public Planeta(int id, String ime, boolean nastanjiva,String tip, int planetaId) {
+    public SvemirskoTelo(int id, String ime, boolean nastanjiva, String tip, int teloID) {
         this.id = id;
         this.ime = ime;
         this.nastanjiva = nastanjiva;
         this.tip = tip;
-        this.planetaId = planetaId;
+        this.teloID = teloID;
 //        this.nastanjiva = nastanjiva;
 //        this.udaljenost = udaljenost;
 //        this.nizaTemp = nizaTemp;

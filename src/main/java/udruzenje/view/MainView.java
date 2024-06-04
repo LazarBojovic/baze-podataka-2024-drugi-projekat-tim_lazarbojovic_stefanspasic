@@ -1,10 +1,5 @@
 package udruzenje.view;
 
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,10 +8,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import udruzenje.model.utility.PlanetaUtils;
-import udruzenje.model.Planeta;
-
-import java.util.List;
+import udruzenje.model.utility.SvemirskoTeloUtils;
 
 public class MainView extends Stage {
     private final BorderPane root = new BorderPane();
@@ -54,8 +46,8 @@ public class MainView extends Stage {
         btnLogin.setOnAction(e -> {
             String username = tfUsername.getText();
             String password = tfPassword.getText();
-            if (PlanetaUtils.loginZahtev(username, password)) {
-                prikazPlaneta();
+            if (SvemirskoTeloUtils.loginZahtev(username, password)) {
+                prikazTela();
             } else {
 
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -76,30 +68,9 @@ public class MainView extends Stage {
 
 
     }
-    private void prikazPlaneta() {
-        List<Planeta> planetList = PlanetaUtils.selectSvePlanete();
-        ObservableList<Planeta> items = FXCollections.observableArrayList(planetList);
-
-        TableView<Planeta> tableView = new TableView<>(items);
-
-        TableColumn<Planeta, Integer> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getId()));
-
-        TableColumn<Planeta, String> imeColumn = new TableColumn<>("Ime");
-        imeColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getIme()));
-
-        TableColumn<Planeta, String> tipColumn = new TableColumn<>("tip");
-        tipColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTip()));
-
-        TableColumn<Planeta, Integer> planetaIdColumn = new TableColumn<>("planetaId");
-        planetaIdColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper(cellData.getValue().getPlanetaId()));
-
-        TableColumn<Planeta, Boolean> istrazenColumn = new TableColumn<>("Nastanjiva");
-        istrazenColumn.setCellValueFactory(cellData -> new ReadOnlyBooleanWrapper(cellData.getValue().isNastanjiva()));
-
-        tableView.getColumns().addAll(idColumn, imeColumn, tipColumn, planetaIdColumn, istrazenColumn);
-
-        root.setCenter(tableView);
+    private void prikazTela() {
+        SvemirskoTeloView svemirskoTeloView = new SvemirskoTeloView();
+        root.setCenter(svemirskoTeloView);
     }
 }
 
