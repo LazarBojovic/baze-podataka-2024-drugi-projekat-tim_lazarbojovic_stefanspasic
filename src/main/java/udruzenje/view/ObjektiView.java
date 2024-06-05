@@ -4,21 +4,19 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
+
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import udruzenje.model.Korisnik;
 import udruzenje.model.Objekat;
 import udruzenje.model.SvemirskoTelo;
+import udruzenje.model.utility.KupovinaUtils;
 import udruzenje.model.utility.ObjekatUtils;
-
-import javax.swing.*;
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.List;
 
 public class ObjektiView extends Stage {
@@ -29,7 +27,7 @@ public class ObjektiView extends Stage {
     private TextField brVozila;
     private Objekat selectedObjekat;
 
-    public ObjektiView(SvemirskoTelo telo) {
+    public ObjektiView(SvemirskoTelo telo, int korisnik) {
         setTitle("Objekti na planeti: " + telo.getIme());
 
         polazakDate = new DatePicker();
@@ -47,12 +45,13 @@ public class ObjektiView extends Stage {
         List<Objekat> objektiList = ObjekatUtils.selectObjektiBySvemirskoTelo(telo.getId());
         ObservableList<Objekat> items = FXCollections.observableArrayList(objektiList);
 
-        tableView = new TableView<>(items);
+            tableView = new TableView<>(items);
         VBox vBox = new VBox(polazakDate,dolazakDate,label1, brVozila,btnKupi);
         HBox hbox = new HBox(tableView, vBox);
 
         TableColumn<Objekat, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getId()));
+
 
         TableColumn<Objekat, String> imeColumn = new TableColumn<>("Ime");
         imeColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getIme()));
@@ -69,10 +68,20 @@ public class ObjektiView extends Stage {
         tableView.getColumns().addAll(idColumn, imeColumn, tipColumn, cenaColumn, povrsinaColumn);
 
         btnKupi.setOnAction( e -> {
-            if(tableView.getSelectionModel().getSelectedItem() != null && dolazakDate.getValue() !=null && polazakDate.getValue() !=null && !brVozila.getText().isEmpty()){
-                System.out.println("Uspesna Kupovina!");
-            }
-            else {
+            Objekat selektovaniObjekat = (Objekat) tableView.getSelectionModel().getSelectedItem();
+             if (tableView.getSelectionModel().getSelectedItem() != null && dolazakDate.getValue() !=null && polazakDate.getValue() !=null && !brVozila.getText().isEmpty()) {
+                 if (KupovinaUtils.kupovinaObjekta(korisnik, selektovaniObjekat.getId(), Date.valueOf(polazakDate.getValue()), Date.valueOf(dolazakDate.getValue()), brVozila.getText())) {
+                     System.out.println("Uspesna Kupovina!");
+                 }
+                 else {
+                     Alert alert = new Alert(Alert.AlertType.ERROR);
+                     alert.setTitle("Greška");
+                     alert.setHeaderText(null);
+                     alert.setContentText("Došlo je do greške prilikom kupovine. Molimo pokušajte ponovo.");
+                     alert.showAndWait();
+                 }
+             }
+             else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Greška");
                 alert.setHeaderText(null);

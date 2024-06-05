@@ -22,12 +22,14 @@ public class SvemirskoTeloView extends BorderPane {
     private CheckBox cbPlanete;
     private CheckBox cbSateliti;
     private FilteredList<SvemirskoTelo> filteredList;
+    private int idKorisnika;
 
-    public SvemirskoTeloView() {
-        init();
+    public SvemirskoTeloView(int idKorisnika) {
+        init(idKorisnika);
     }
 
-    private void init() {
+    private void init(int idKorisnika) {
+        this.idKorisnika = idKorisnika;
         List<SvemirskoTelo> svemirskoTeloLista = SvemirskoTeloUtils.selectSvaTela();
         ObservableList<SvemirskoTelo> items = FXCollections.observableArrayList(svemirskoTeloLista);
 
@@ -77,7 +79,7 @@ public class SvemirskoTeloView extends BorderPane {
         System.out.println(tableView.getSelectionModel().getSelectedItem());
         SvemirskoTelo selectedTelo = tableView.getSelectionModel().getSelectedItem();
         if (selectedTelo != null) {
-            ObjektiView objektiView = new ObjektiView(selectedTelo);
+            ObjektiView objektiView = new ObjektiView(selectedTelo, idKorisnika);
             objektiView.show();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);

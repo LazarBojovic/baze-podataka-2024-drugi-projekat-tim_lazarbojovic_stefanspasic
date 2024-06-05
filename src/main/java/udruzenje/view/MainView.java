@@ -8,10 +8,12 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import udruzenje.model.Korisnik;
 import udruzenje.model.utility.SvemirskoTeloUtils;
 
 public class MainView extends Stage {
     private final BorderPane root = new BorderPane();
+    private int idKorisnika;
 
     public MainView() {
         super.setTitle("UdruzenjeZus");
@@ -46,7 +48,10 @@ public class MainView extends Stage {
         btnLogin.setOnAction(e -> {
             String username = tfUsername.getText();
             String password = tfPassword.getText();
+
             if (SvemirskoTeloUtils.loginZahtev(username, password)) {
+                idKorisnika = SvemirskoTeloUtils.getKorisnik(username);
+                System.out.println(idKorisnika + " je ID ulogovanog Korisnika");
                 prikazTela();
             } else {
 
@@ -69,7 +74,7 @@ public class MainView extends Stage {
 
     }
     private void prikazTela() {
-        SvemirskoTeloView svemirskoTeloView = new SvemirskoTeloView();
+        SvemirskoTeloView svemirskoTeloView = new SvemirskoTeloView(idKorisnika);
         root.setCenter(svemirskoTeloView);
     }
 }

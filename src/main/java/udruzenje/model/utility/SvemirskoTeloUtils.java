@@ -1,5 +1,6 @@
 package udruzenje.model.utility;
 
+import udruzenje.model.Korisnik;
 import udruzenje.model.SvemirskoTelo;
 
 import java.sql.*;
@@ -49,4 +50,21 @@ public class SvemirskoTeloUtils {
         return planetLista;
     }
 
+    public static int getKorisnik(String korisnickoIme) {
+
+        try (Connection connection = JDBCUtils.getConnection()){
+
+            String query = "SELECT id FROM Korisnik WHERE korisnicko_ime = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(query)){
+                pstmt.setString(1, korisnickoIme);
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    rs.next();
+                    return rs.getInt("id");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
 }
