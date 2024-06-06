@@ -13,7 +13,7 @@ public class ObjekatUtils {
     public static List<Objekat> selectObjektiBySvemirskoTelo(int teloId) {
         List<Objekat> objektiList = new ArrayList<>();
         try (Connection connection = JDBCUtils.getConnection()) {
-            String query = "SELECT * FROM objekat WHERE telo_id = ?";
+            String query = "SELECT * FROM objekat WHERE telo_id = ? AND kupljen = 0";
             try (PreparedStatement pstmt = connection.prepareStatement(query)) {
                 pstmt.setInt(1, teloId);
                 try (ResultSet rs = pstmt.executeQuery()) {
@@ -39,5 +39,19 @@ public class ObjekatUtils {
         }
 
         return objektiList;
+    }
+
+    public static boolean setObljekatKupljen(int objekatId) {
+        try (Connection connection = JDBCUtils.getConnection()) {
+            String query = "UPDATE objekat SET kupljen = 1 WHERE id = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setInt(1, objekatId);
+                int affectedRows = pstmt.executeUpdate();
+                return affectedRows > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

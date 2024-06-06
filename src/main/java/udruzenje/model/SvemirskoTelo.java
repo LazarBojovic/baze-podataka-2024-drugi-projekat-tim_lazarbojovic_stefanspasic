@@ -8,7 +8,7 @@ public class SvemirskoTelo {
     private final int id;
     private String  ime;
     private String tip;
-    private int teloID;
+    private String teloID;
     private boolean istrazen;
     private boolean nastanjiva;
     private double  udaljenost;
@@ -21,12 +21,12 @@ public class SvemirskoTelo {
     private int brUmrlih;
     private int godinaIstrazivanja;
 
-    public SvemirskoTelo(int id, String ime, boolean nastanjiva, String tip, int teloID) {
+    public SvemirskoTelo(int id, String ime, boolean nastanjiva, String tip, String teloIme) {
         this.id = id;
         this.ime = ime;
         this.nastanjiva = nastanjiva;
         this.tip = tip;
-        this.teloID = teloID;
+        this.teloID = teloIme;
 //        this.nastanjiva = nastanjiva;
 //        this.udaljenost = udaljenost;
 //        this.nizaTemp = nizaTemp;

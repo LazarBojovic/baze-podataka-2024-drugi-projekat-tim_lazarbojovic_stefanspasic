@@ -52,7 +52,7 @@ public class MainView extends Stage {
             if (SvemirskoTeloUtils.loginZahtev(username, password)) {
                 idKorisnika = SvemirskoTeloUtils.getKorisnik(username);
                 System.out.println(idKorisnika + " je ID ulogovanog Korisnika");
-                prikazTela();
+                prikazPocetneStrane();
             } else {
 
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -73,9 +73,9 @@ public class MainView extends Stage {
 
 
     }
-    private void prikazTela() {
-        SvemirskoTeloView svemirskoTeloView = new SvemirskoTeloView(idKorisnika);
-        root.setCenter(svemirskoTeloView);
+    private void prikazPocetneStrane(){
+        PocetnaStranaVIew pocetnaStranaVIew = new PocetnaStranaVIew(idKorisnika);
+        root.setCenter(pocetnaStranaVIew);
     }
 }
 

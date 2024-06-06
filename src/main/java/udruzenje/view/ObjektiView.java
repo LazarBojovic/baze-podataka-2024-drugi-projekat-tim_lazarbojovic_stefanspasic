@@ -11,7 +11,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import udruzenje.model.Korisnik;
 import udruzenje.model.Objekat;
 import udruzenje.model.SvemirskoTelo;
 import udruzenje.model.utility.KupovinaUtils;
@@ -49,49 +48,60 @@ public class ObjektiView extends Stage {
         VBox vBox = new VBox(polazakDate,dolazakDate,label1, brVozila,btnKupi);
         HBox hbox = new HBox(tableView, vBox);
 
-        TableColumn<Objekat, Integer> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getId()));
+        TableColumn<Objekat, Integer> idKolona = new TableColumn<>("ID");
+        idKolona.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getId()));
 
 
-        TableColumn<Objekat, String> imeColumn = new TableColumn<>("Ime");
-        imeColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getIme()));
+        TableColumn<Objekat, String> imeKolona = new TableColumn<>("Ime");
+        imeKolona.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getIme()));
 
-        TableColumn<Objekat, String> tipColumn = new TableColumn<>("Tip");
-        tipColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTip()));
+        TableColumn<Objekat, String> tipKolona = new TableColumn<>("Tip");
+        tipKolona.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTip()));
 
-        TableColumn<Objekat, Double> cenaColumn = new TableColumn<>("cena");
-        cenaColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getCena()));
+        TableColumn<Objekat, Double> cenaKolona = new TableColumn<>("cena");
+        cenaKolona.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getCena()));
 
-        TableColumn<Objekat, Double> povrsinaColumn = new TableColumn<>("Povrsina");
-        povrsinaColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getPovrsina()));
+        TableColumn<Objekat, Double> povrsinaKolona = new TableColumn<>("Povrsina");
+        povrsinaKolona.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getPovrsina()));
 
-        tableView.getColumns().addAll(idColumn, imeColumn, tipColumn, cenaColumn, povrsinaColumn);
+        tableView.getColumns().addAll(idKolona, imeKolona, tipKolona, cenaKolona, povrsinaKolona);
 
         btnKupi.setOnAction( e -> {
             Objekat selektovaniObjekat = (Objekat) tableView.getSelectionModel().getSelectedItem();
-             if (tableView.getSelectionModel().getSelectedItem() != null && dolazakDate.getValue() !=null && polazakDate.getValue() !=null && !brVozila.getText().isEmpty()) {
+             if (selektovaniObjekat != null && dolazakDate.getValue() !=null && polazakDate.getValue() !=null && !brVozila.getText().isEmpty()) {
                  if (KupovinaUtils.kupovinaObjekta(korisnik, selektovaniObjekat.getId(), Date.valueOf(polazakDate.getValue()), Date.valueOf(dolazakDate.getValue()), brVozila.getText())) {
-                     System.out.println("Uspesna Kupovina!");
+                     if (ObjekatUtils.setObljekatKupljen(selektovaniObjekat.getId())) {
+                         items.remove(selektovaniObjekat);
+                         message("Uspesna Kupovina!", true);
+                     } else
+                         message("Došlo je do greške prilikom ažuriranja objekta.", false);
                  }
-                 else {
-                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                     alert.setTitle("Greška");
-                     alert.setHeaderText(null);
-                     alert.setContentText("Došlo je do greške prilikom kupovine. Molimo pokušajte ponovo.");
-                     alert.showAndWait();
-                 }
+                 else
+                     message("Došlo je do greške prilikom kupovine. Molimo pokušajte ponovo.",false);
              }
-             else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Greška");
-                alert.setHeaderText(null);
-                alert.setContentText("Molimo unesite sve potrebne podatke");
-                alert.showAndWait();
-            }
+             else
+                 message("Molimo unesite sve potrebne podatke", false);
         });
 
         root.setCenter(hbox);
         setScene(scene);
+    }
+
+    private void message(String message, boolean b) {
+        Alert alert;
+
+        if(b){
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Uspeh!");
+        }
+        else {
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Greška");
+
+        }
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 }

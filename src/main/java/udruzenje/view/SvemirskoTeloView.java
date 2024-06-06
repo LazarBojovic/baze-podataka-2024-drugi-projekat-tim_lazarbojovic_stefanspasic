@@ -6,29 +6,34 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import udruzenje.model.Kupovina;
 import udruzenje.model.SvemirskoTelo;
 import udruzenje.model.utility.SvemirskoTeloUtils;
 import java.util.List;
 
-public class SvemirskoTeloView extends BorderPane {
+public class SvemirskoTeloView extends Stage {
 
     private TableView<SvemirskoTelo> tableView;
     private Button btnPrikazObjekata;
-
+    private Button btnPrikazMisija;
     private CheckBox cbPlanete;
     private CheckBox cbSateliti;
     private FilteredList<SvemirskoTelo> filteredList;
     private int idKorisnika;
+
 
     public SvemirskoTeloView(int idKorisnika) {
         init(idKorisnika);
     }
 
     private void init(int idKorisnika) {
+        this.setTitle("Nastanjive planete");
         this.idKorisnika = idKorisnika;
         List<SvemirskoTelo> svemirskoTeloLista = SvemirskoTeloUtils.selectSvaTela();
         ObservableList<SvemirskoTelo> items = FXCollections.observableArrayList(svemirskoTeloLista);
@@ -46,8 +51,8 @@ public class SvemirskoTeloView extends BorderPane {
         TableColumn<SvemirskoTelo, String> tipKolona = new TableColumn<>("Tip");
         tipKolona.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTip()));
 
-        TableColumn<SvemirskoTelo, Integer> teloIdKolona = new TableColumn<>("Telo ID");
-        teloIdKolona.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getTeloID()));
+        TableColumn<SvemirskoTelo, String> teloIdKolona = new TableColumn<>("Telo ID");
+        teloIdKolona.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTeloID()));
 
         TableColumn<SvemirskoTelo, Boolean> istrazenKolona = new TableColumn<>("Nastanjiva");
         istrazenKolona.setCellValueFactory(cellData -> new ReadOnlyBooleanWrapper(cellData.getValue().isNastanjiva()));
@@ -56,6 +61,8 @@ public class SvemirskoTeloView extends BorderPane {
 
         btnPrikazObjekata = new Button("Prikaz objekata");
         btnPrikazObjekata.setOnAction(e -> prikaziObjekte());
+        btnPrikazMisija = new Button("Prikaz misija");
+        btnPrikazMisija.setOnAction(e -> prikaziMisije());
 
         cbPlanete = new CheckBox("Planete");
         cbPlanete.setSelected(true);
@@ -65,13 +72,29 @@ public class SvemirskoTeloView extends BorderPane {
         cbPlanete.setOnAction(e -> filter());
         cbSateliti.setOnAction(e -> filter());
 
-        HBox hbox = new HBox(btnPrikazObjekata,cbPlanete,cbSateliti);
+        HBox hbox = new HBox(btnPrikazObjekata,cbPlanete,cbSateliti,btnPrikazMisija);
 
         VBox vbox = new VBox(tableView,hbox);
 
 
+        Scene scene = new Scene(vbox,600,400);
+        this.setScene(scene);
+    }
 
-        this.setCenter(vbox);
+    private void prikaziMisije() {
+        SvemirskoTelo selectedTelo = tableView.getSelectionModel().getSelectedItem();
+
+
+        if (selectedTelo != null) {
+            MisijeView objektiView = new MisijeView(selectedTelo, idKorisnika);
+            objektiView.show();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Upozorenje");
+            alert.setHeaderText(null);
+            alert.setContentText("Molimo odaberite telo.");
+            alert.showAndWait();
+        }
     }
 
 
